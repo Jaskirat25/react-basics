@@ -7,7 +7,7 @@ const [length, setLength] = useState(20)
 const [numbers, setNumbers] = useState(false)
 const [characters, setCharacters] = useState(false)
 const[password, setPassword] = useState('')
-
+const[copy, setCopy] = useState(false)
 const handleGeneratePassword = useCallback(() => {
  
   let pass='';
@@ -19,8 +19,14 @@ const handleGeneratePassword = useCallback(() => {
     pass+=str.charAt(ans)
   }
   setPassword(pass)
+  setCopy(false)
 },[length, numbers, characters])
  
+const handlecopy = () => {
+  navigator.clipboard.writeText(password)
+  setCopy(true)
+}
+
 
 useEffect(() => {
   handleGeneratePassword()
@@ -40,8 +46,8 @@ className='w-full h-10 mt-4 p-2 rounded-md text-stone-900'
 value={password}
 readOnly
 />
-<button className='bg-blue-500 text-white p-2 rounded-md h-10 mt-4 shrink-0' >
-  copy
+<button className='bg-blue-500 text-white p-2 rounded-md h-10 mt-4 shrink-0' onClick={handlecopy} >
+  {copy ? 'copied' : 'copy'}
 </button>
 
 </div >
