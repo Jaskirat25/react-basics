@@ -1,25 +1,49 @@
 import { removeTodo, updateTodo } from "../todo/todoSlice";
-
+import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
 function Todos() {
   const todos = useSelector((state) => state.todos);
   const dispatch = useDispatch();
+  const [editingTodoId, setEditingTodoId] = useState(null);;
+  const [editedValue, setEditedValue] = useState("");
 
+  const handleEditClick = (todo) => {
+    setEditingTodoId(todo.id);
+    
+    setEditedValue(todo.text);
+  };
+
+  const handleSaveClick = (todoId) => {
+    dispatch(updateTodo({id:todoId,text: editedValue})); 
+    
+    
+    setEditingTodoId(null);
+   
+  };
   return (
     <>
-    
-
-
-
-      <div>Todos</div>
+     <div>Todos</div>
       <ul className="list-none">
         {todos.map((todo) => (
+          
           <li
-            className="mt-4 flex justify-between items-center bg-zinc-800 px-4 py-2 rounded"
-            key={todo.id}
+          className="mt-4 flex justify-between items-center bg-zinc-800 px-4 py-2 rounded"
+          key={todo.id}
           >
-            <div className="text-white">{todo.text}</div>
+           
+          
+           
+            {editingTodoId == todo.id ? (
+              <input
+                type="text"
+                value={editedValue}
+                onChange={(e) => setEditedValue(e.target.value)}
+                className="flex-1 mr-4 border rounded py-1 px-2 text-black"
+              />
+            ) : (
+              <div className="text-white flex-1">{todo.text}</div>
+            )}
             
             <button
               onClick={() => dispatch(removeTodo(todo.id))}
@@ -40,6 +64,21 @@ function Todos() {
                 />
               </svg>
             </button>
+            {editingTodoId === todo.id ? (
+                <button
+                  onClick={() => handleSaveClick(todo.id)}
+                  className="text-white bg-green-500 border-0 py-1 px-4 focus:outline-none hover:bg-green-600 rounded"
+                >
+                  Save
+                </button>
+              ) : (
+                <button
+                  onClick={() => handleEditClick(todo)}
+                  className="text-white bg-blue-500 border-0 py-1 px-4 focus:outline-none hover:bg-blue-600 rounded"
+                >
+                  Edit
+                </button>
+              )}
           </li>
         ))}
       </ul>
