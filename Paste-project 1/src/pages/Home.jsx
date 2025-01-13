@@ -1,10 +1,13 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Navbar from "../components/Navbar";
 import Button from "../components/Button";
-import { useDispatch } from "react-redux";
-import { addPaste } from "../store/PasteSlice";
-
+import { useDispatch, useSelector } from "react-redux";
+import { addPaste, updatePaste } from "../store/PasteSlice";
+import { useNavigate, useParams } from "react-router-dom";
+import toast from "react-hot-toast";
 function Home() {
+  const navigate=useNavigate()
+  const { id } = useParams();
   const [value, setvalue] = useState("");
   const [content, setcontent] = useState("");
   const dispatch = useDispatch();
@@ -21,6 +24,25 @@ function Home() {
     setcontent("");
     setvalue("");
   };
+  const paste = useSelector((state) => state.paste.pastes);
+  const p = id?paste.filter((item) => item._id == id):[];
+  const editPost = () => {
+    const ob = {
+      title: value,
+      content: content,
+      _id:id,
+    };
+   
+  dispatch(updatePaste(ob))
+navigate("/Pastes")
+toast.success("Updated")
+  };
+  useEffect(() => {
+    if (id && p.length > 0 && value === "" && content === "") {
+      setvalue(p[0].title);
+      setcontent(p[0].content);
+    }
+  }, []);
   return (
     <>
       <Navbar />
@@ -32,13 +54,15 @@ function Home() {
             id="first_name"
             className="h-10 mt-8 bg-gray-700  text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 w-[40%] p-2.5 "
             placeholder="Title"
-            value={value}
+            value= {value}
             onChange={(e) => setvalue(e.target.value)}
             required
           />
-
-          {/* Button */}
-          <Button text="Create" onClick={CreatePost} />
+          {id ? (
+            <Button text="Update" onclick={editPost} />
+          ) : (
+            <Button text="Create" onClick={CreatePost} />
+          )}
         </div>
 
         <textarea
